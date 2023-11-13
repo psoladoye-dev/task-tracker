@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace DataAccess.HardCoded;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum StatusTypeEnum
+public enum TaskStatusTypeEnum
 {
     [Description("To Do")]
     ToDo = 1,
