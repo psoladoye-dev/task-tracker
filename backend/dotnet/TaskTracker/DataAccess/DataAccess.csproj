@@ -11,8 +11,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Entity\" />
       <Folder Include="Repository\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Common\Common.csproj" />
+      <ProjectReference Include="..\Util\Util.csproj" />
     </ItemGroup>
 
 </Project>
