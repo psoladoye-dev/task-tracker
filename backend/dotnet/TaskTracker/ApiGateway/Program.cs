@@ -1,4 +1,7 @@
-using DataAccess;
+using System.Diagnostics;using Common.Configuration;
+using Serilog;
+using Telemetry;
+using Telemetry.Logging;
 
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 if (string.IsNullOrEmpty(environment))
@@ -11,33 +14,69 @@ var configurationRoot = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
-// Log.Logger = new LoggerConfiguration()
-//     .ReadFrom.Configuration(configurationRoot)
-//     .Enrich.FromLogContext()
-//     .CreateBootstrapLogger();
+var appSettings = configurationRoot.GetSection(AppSettings.SectionKey)
+    .Get<AppSettings>() ?? new AppSettings();
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(configurationRoot)
+    .Enrich.FromLogContext()
+    .CreateBootstrapLogger();
+
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
+    
+    var loggerOptions = builder.Configuration.GetSection(LoggerOptions.SectionKey)
+        .Get<LoggerOptions>() ?? new LoggerOptions();
+
+    if (loggerOptions.UseLogger == "serilog")
+    {
+        builder.Host.ConfigureSerilogLogging();
+    }
+    else
+    {
+        builder.Host.ConfigureDefaultLogging();
+    }
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+    builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+    
+    builder.Services.AddSingleton<AppSettings>(_ => appSettings);
+    builder.Services.AddOpenTelemetry(configurationRoot);
 
-var app = builder.Build();
+    var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    if (!app.Environment.IsEnvironment("Testing") && app.Configuration.ShouldConfigureSerilog())
+    {
+        app.UseSerilogRequestLogging(opts =>
+        {
+            opts.IncludeQueryInRequestPath = true;
+        });
+    }
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    await app.RunAsync();
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-await app.RunAsync();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

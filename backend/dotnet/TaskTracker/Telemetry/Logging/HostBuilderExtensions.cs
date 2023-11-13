@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,6 +12,7 @@ using Serilog.Sinks.OpenTelemetry;
 
 namespace Telemetry.Logging;
 
+[ExcludeFromCodeCoverage(Justification = "Dependency injection registration")]
 public static class HostBuilderExtensions
 {
     public static IHostBuilder ConfigureDefaultLogging(this IHostBuilder hostBuilder)
