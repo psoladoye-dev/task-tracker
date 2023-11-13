@@ -1,10 +1,12 @@
+using DataAccess.Entity;
+
 namespace DataAccess.Repository;
 
 public interface IUserRepository
 {
-    Task Add();
-    Task Update();
-    Task Delete();
+    Task Add(User user);
+    Task Update(User user);
+    Task Delete(User user);
 }
 
 public class UserRepository : IUserRepository
@@ -16,18 +18,18 @@ public class UserRepository : IUserRepository
         _applicationDbContext = applicationDbContext;
     }
 
-    public Task Add()
+    public async Task Add(User user)
     {
-        throw new NotImplementedException();
+        await _applicationDbContext.Users.AddAsync(user);
     }
 
-    public Task Update()
+    public async Task Update(User user)
     {
-        throw new NotImplementedException();
+        await Task.FromResult(_applicationDbContext.Users.Update(user));
     }
 
-    public Task Delete()
+    public async Task Delete(User user)
     {
-        throw new NotImplementedException();
+        await Task.FromResult(_applicationDbContext.Users.Remove(user));
     }
 }

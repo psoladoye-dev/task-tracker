@@ -32,9 +32,28 @@ public class UnitOfWork : IUnitOfWork
         TagRepository = tagRepository;
     }
 
-    public Task<int> SaveChanges()
+    public async Task<int> SaveChanges()
     {
-        throw new NotImplementedException();
+        await using var transaction = await _applicationDbContext.Database.BeginTransactionAsync();
+        try
+        {
+            await OnBeforeSavingChanges();
+            var numOfRowsAffected = await _applicationDbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return numOfRowsAffected;
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Failed to save changes. Transaction rolled back");
+            throw;
+        }
+    }
+
+    private Task OnBeforeSavingChanges()
+    {
+        // TODO: Audit database changes
+        return Task.CompletedTask;
     }
 
     public void Dispose()

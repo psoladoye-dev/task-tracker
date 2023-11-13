@@ -19,11 +19,12 @@ public class ApplicationDbContext : DbContext
     
     public DbSet<User> Users => Set<User>();
     public DbSet<UserTask> Tasks => Set<UserTask>();
+    public DbSet<Tag> Tags => Set<Tag>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(_appSettings.ApplicationDbSchema);
-        modelBuilder.SeedEnumItems<StatusType, StatusTypeEnum>(x => x);
+        modelBuilder.SeedEnumItems<TaskStatusType, TaskStatusTypeEnum>(x => x);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())

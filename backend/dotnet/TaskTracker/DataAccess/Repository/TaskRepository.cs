@@ -1,10 +1,12 @@
+using DataAccess.Entity;
+
 namespace DataAccess.Repository;
 
 public interface ITaskRepository
 {
-    Task Add();
-    Task Update();
-    Task Delete();
+    Task Add(UserTask userTask);
+    Task Update(UserTask userTask);
+    Task Delete(UserTask userTask);
 }
 
 public class TaskRepository : ITaskRepository
@@ -16,18 +18,18 @@ public class TaskRepository : ITaskRepository
         _applicationDbContext = applicationDbContext;
     }
 
-    public Task Add()
+    public async Task Add(UserTask userTask)
     {
-        throw new NotImplementedException();
+        await _applicationDbContext.Tasks.AddAsync(userTask);
     }
 
-    public Task Update()
+    public async Task Update(UserTask userTask)
     {
-        throw new NotImplementedException();
+        await Task.FromResult(_applicationDbContext.Tasks.Update(userTask));
     }
 
-    public Task Delete()
+    public async Task Delete(UserTask userTask)
     {
-        throw new NotImplementedException();
+        await Task.FromResult(_applicationDbContext.Tasks.Remove(userTask));
     }
 }

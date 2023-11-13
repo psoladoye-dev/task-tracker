@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using DataAccess.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,11 @@ public static class DependencyConfiguration
         {
             opts.UseNpgsql(configuration.GetConnectionString("ApplicationDbConnection"));
         });
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
         return services;
     }
 }

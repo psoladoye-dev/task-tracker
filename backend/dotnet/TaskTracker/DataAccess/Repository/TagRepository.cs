@@ -1,10 +1,12 @@
+using DataAccess.Entity;
+
 namespace DataAccess.Repository;
 
 public interface ITagRepository
 {
-    Task Add();
-    Task Update();
-    Task Delete();
+    Task Add(Tag tag);
+    Task Update(Tag tag);
+    Task Delete(Tag tag);
 }
 
 public class TagRepository : ITagRepository
@@ -16,18 +18,18 @@ public class TagRepository : ITagRepository
         _applicationDbContext = applicationDbContext;
     }
 
-    public Task Add()
+    public async Task Add(Tag tag)
     {
-        throw new NotImplementedException();
+        await _applicationDbContext.Tags.AddAsync(tag);
     }
 
-    public Task Update()
+    public async Task Update(Tag tag)
     {
-        throw new NotImplementedException();
+        await Task.FromResult(_applicationDbContext.Tags.Update(tag));
     }
 
-    public Task Delete()
+    public async Task Delete(Tag tag)
     {
-        throw new NotImplementedException();
+        await Task.FromResult(_applicationDbContext.Tags.Remove(tag));
     }
 }
