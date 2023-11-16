@@ -1,4 +1,4 @@
-using System.Diagnostics;using Common.Configuration;
+using Common.Configuration;
 using Serilog;
 using Telemetry;
 using Telemetry.Logging;

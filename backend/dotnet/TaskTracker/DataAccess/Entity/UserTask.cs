@@ -8,7 +8,9 @@ public sealed class UserTask : IEntity
 {
     [Key]
     public int Id { get; set; }
-    
+
+    public Guid Uuid { get; set; }
+
     [Required]
     [MaxLength(100)]
     public string Name { get; set; } = default!;

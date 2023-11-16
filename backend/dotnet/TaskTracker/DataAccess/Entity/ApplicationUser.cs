@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Entity;
 
-[Table("users")]
-public sealed class User : IEntity
+[Table("application_users")]
+public sealed class ApplicationUser : IEntity
 {
     [Key]
     public int Id { get; set; }
+    
+    public Guid Uuid { get; set; }
     
     [Required]
     [MaxLength(100)]

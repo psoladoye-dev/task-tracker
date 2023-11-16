@@ -4,9 +4,9 @@ namespace DataAccess.Repository;
 
 public interface IUserRepository
 {
-    Task Add(User user);
-    Task Update(User user);
-    Task Delete(User user);
+    Task Add(ApplicationUser applicationUser);
+    Task Update(ApplicationUser applicationUser);
+    Task Delete(ApplicationUser applicationUser);
 }
 
 public class UserRepository : IUserRepository
@@ -18,18 +18,18 @@ public class UserRepository : IUserRepository
         _applicationDbContext = applicationDbContext;
     }
 
-    public async Task Add(User user)
+    public async Task Add(ApplicationUser applicationUser)
     {
-        await _applicationDbContext.Users.AddAsync(user);
+        await _applicationDbContext.ApplicationUsers.AddAsync(applicationUser);
     }
 
-    public async Task Update(User user)
+    public async Task Update(ApplicationUser applicationUser)
     {
-        await Task.FromResult(_applicationDbContext.Users.Update(user));
+        await Task.FromResult(_applicationDbContext.ApplicationUsers.Update(applicationUser));
     }
 
-    public async Task Delete(User user)
+    public async Task Delete(ApplicationUser applicationUser)
     {
-        await Task.FromResult(_applicationDbContext.Users.Remove(user));
+        await Task.FromResult(_applicationDbContext.ApplicationUsers.Remove(applicationUser));
     }
 }

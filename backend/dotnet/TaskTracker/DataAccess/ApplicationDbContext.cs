@@ -2,6 +2,7 @@
 using DataAccess.Entity;
 using DataAccess.Extensions;
 using DataAccess.HardCoded;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -17,7 +18,7 @@ public class ApplicationDbContext : DbContext
         _appSettings = appSettings.Value;
     }
     
-    public DbSet<User> Users => Set<User>();
+    public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
     public DbSet<UserTask> Tasks => Set<UserTask>();
     public DbSet<Tag> Tags => Set<Tag>();
 

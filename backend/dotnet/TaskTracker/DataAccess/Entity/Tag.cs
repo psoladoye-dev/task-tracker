@@ -9,6 +9,8 @@ public sealed class Tag : IEntity
     [Key]
     public int Id { get; set; }
 
+    public Guid Uuid { get; set; }
+
     [Required]
     [MaxLength(50)]
     public string Name { get; set; } = default!;
