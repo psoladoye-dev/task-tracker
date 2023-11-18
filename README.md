@@ -1,5 +1,3 @@
-# task-tracker
-
 # task-tracker - Simple Task Management Application
 
 ## Project Description
