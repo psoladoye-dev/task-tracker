@@ -1,11 +1,9 @@
 using Common.Configuration;
 using IdentityService.DataAccess;
 using IdentityService.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Telemetry.Logging;
 
@@ -65,7 +63,7 @@ public static class ProgramExtensions
         builder.Services.AddDbContext<IdentityServiceDbContext>(
             options =>
             {
-                options.UseInMemoryDatabase("IdentityServiceDb");
+                options.UseInMemoryDatabase(nameof(IdentityServiceDbContext));
                 options.UseOpenIddict();
             });
         builder.Services.AddHostedService<DbWorker>();
@@ -81,17 +79,29 @@ public static class ProgramExtensions
         });
         openIddictBuilder.AddServer(options =>
         {
-            options.SetAuthorizationEndpointUris("connect/authorize");
+            // options.SetAuthorizationEndpointUris("connect/authorize");
             options.SetTokenEndpointUris("connect/token");
-            options.SetLogoutEndpointUris("connect/logout");
-            options.AllowAuthorizationCodeFlow();
+            options.SetIntrospectionEndpointUris("connect/token/introspect");
+            options.SetRevocationEndpointUris("connect/token/revoke");
+            // options.SetLogoutEndpointUris("connect/logout");
+            options.DisableAccessTokenEncryption();
+
+            options.RegisterScopes("api");
+            options.RegisterClaims("Something");
+            
+            // options.AllowPasswordFlow();
+            // options.AcceptAnonymousClients();
+            // options.AllowAuthorizationCodeFlow();
             options.AllowClientCredentialsFlow();
-            options.AddDevelopmentEncryptionCertificate()
-                .AddDevelopmentSigningCertificate();
+            options.AllowRefreshTokenFlow();
+            
+            options.AddDevelopmentEncryptionCertificate();
+            options.AddDevelopmentSigningCertificate();
+
             options.UseAspNetCore()
-                .EnableAuthorizationEndpointPassthrough()
-                .EnableLogoutEndpointPassthrough()
-                .EnableTokenEndpointPassthrough();
+            // .EnableAuthorizationEndpointPassthrough()
+            // .EnableLogoutEndpointPassthrough()
+            .EnableTokenEndpointPassthrough();
         });
         openIddictBuilder.AddValidation(options =>
         {
@@ -104,25 +114,6 @@ public static class ProgramExtensions
     {
         builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<IdentityServiceDbContext>();
-            // .AddDefaultTokenProviders();
-        var authenticationBuilder = builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        });
-        authenticationBuilder.AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidAudience = "paul",
-                ValidIssuer = "paul",
-                RequireExpirationTime = true,
-                IssuerSigningKey = new SymmetricSecurityKey("This is a test key"u8.ToArray()),
-                ValidateIssuerSigningKey = true
-            };
-        });
     }
     
     public static void AddCustomHealthChecks(this WebApplicationBuilder builder)

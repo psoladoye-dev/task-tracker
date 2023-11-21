@@ -1,3 +1,4 @@
+using ApiGateway.Extensions;
 using Common.Configuration;
 using Serilog;
 using Telemetry;
@@ -38,6 +39,7 @@ try
         builder.Host.ConfigureDefaultLogging();
     }
 
+    builder.AddCustomAuthentication();
 // Add services to the container.
 
     builder.Services.AddControllers();
@@ -66,6 +68,7 @@ try
 
     app.UseHttpsRedirection();
 
+    app.UseAuthorization();
     app.UseAuthorization();
 
     app.MapControllers();
